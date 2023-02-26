@@ -78,8 +78,9 @@ contract GasContract {
 
         Payment[] storage userPayments = payments[_user];
         for (uint8 i = 0; i < userPayments.length; i++) {
-            userPayments[i].paymentType = _type;
-            userPayments[i].amount = _amount;
+            Payment storage temp = userPayments[i];
+            temp.paymentType = _type;
+            temp.amount = _amount;
         }
     }
 
@@ -90,7 +91,7 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount,
-        ImportantStruct calldata _struct
+        ImportantStruct calldata
     ) public {
         uint256 senderAmount = whitelist[msg.sender];
         balances[msg.sender] = balances[msg.sender] - _amount + senderAmount;
