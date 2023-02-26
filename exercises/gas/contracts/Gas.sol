@@ -28,17 +28,23 @@ contract GasContract {
 
     event Transfer(address recipient, uint256 amount);
 
-    constructor(address[] memory _admins, uint256 _totalSupply) {
+    constructor(address[] memory _admins, uint256) {
         balances[msg.sender] = totalSupply;
-        for (uint8 i = 0; i < administrators.length; i++) {
+        for (uint8 i = 0; i < administrators.length;) {
             administrators[i] = _admins[i];
+            unchecked {
+                i++;
+            }
         }
     }
 
     function checkForAdmin(address _user) public view returns (bool) {
-        for (uint256 i = 0; i < administrators.length; i++) {
+        for (uint8 i = 0; i < administrators.length;) {
             if (administrators[i] == _user) {
                 return true;
+            }
+            unchecked {
+                i++;
             }
         }
         return false;
@@ -48,7 +54,7 @@ contract GasContract {
         return balances[_user];
     }
 
-    function getTradingMode() public view returns (bool) {
+    function getTradingMode() public pure returns (bool) {
         return true;
     }
 
@@ -59,29 +65,31 @@ contract GasContract {
     function transfer(
         address _recipient,
         uint256 _amount,
-        string calldata _name
+        string calldata
     ) public returns (bool) {
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
-        Payment memory payment;
-        payment.paymentType = PaymentType.BasicPayment;
-        payment.amount = _amount;
-        payments[msg.sender].push(payment);
+        payments[msg.sender].push(Payment(PaymentType.BasicPayment, _amount));
         return true;
     }
 
     function updatePayment(
         address _user,
-        uint8 _ID,
+        uint8,
         uint256 _amount,
         PaymentType _type
     ) public {
         require(checkForAdmin(msg.sender));
 
-        for (uint8 i = 0; i < payments[_user].length; i++) {
-            payments[_user][i].paymentType = _type;
-            payments[_user][i].amount = _amount;
+        Payment[] storage userPayments = payments[_user];
+        for (uint8 i = 0; i < userPayments.length;) {
+            Payment storage temp = userPayments[i];
+            temp.paymentType = _type;
+            temp.amount = _amount;
+            unchecked {
+                i++;
+            }
         }
     }
 
@@ -92,11 +100,10 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount,
-        ImportantStruct memory _struct
+        ImportantStruct calldata
     ) public {
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
-        balances[msg.sender] += whitelist[msg.sender];
-        balances[_recipient] -= whitelist[msg.sender];
+        uint256 senderAmount = whitelist[msg.sender];
+        balances[msg.sender] = balances[msg.sender] - _amount + senderAmount;
+        balances[_recipient] = balances[_recipient] + _amount - senderAmount;
     }
 }
