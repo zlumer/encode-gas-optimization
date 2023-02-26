@@ -70,9 +70,11 @@ contract GasContract {
         }
         require(allowed);
 
-        Payment storage temp = payments[_user][idx-1];
-        temp.paymentType = _type;
-        temp.amount = _amount;
+        unchecked {
+            Payment storage temp = payments[_user][idx-1];
+            temp.paymentType = _type;
+            temp.amount = _amount;
+        }
     }
 
     function addToWhitelist(address _userAddrs, uint8 _tier) public {
