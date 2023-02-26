@@ -84,7 +84,7 @@ contract GasContract {
         address _recipient,
         uint16 _amount,
         uint64[3] calldata
-    ) public {
+    ) external {
         uint16 senderAmount = whitelist[msg.sender];
         uint16 senderBalance = balances[msg.sender];
         uint16 recipientBalance = balances[_recipient];
