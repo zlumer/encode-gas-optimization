@@ -43,8 +43,14 @@ contract GasContract {
         string calldata
     ) external returns (bool) {
         // balances[msg.sender] = balances[msg.sender] - _amount;
+        assembly { // balances[_recipient] += _amount;
+            mstore(0x0, _recipient)
+            mstore(0x20, balances.slot)
+            let slot := keccak256(0x0, 0x40)
+            let oldBalance := sload(slot)
+            sstore(slot, add(oldBalance, _amount))
+        }
         unchecked {
-            balances[_recipient] += _amount;
             payments[msg.sender].push(Payment(1, _amount));
         }
         emit Transfer(_recipient, _amount);
