@@ -9,7 +9,6 @@ struct Payment {
 contract GasContract {
     uint16 public constant totalSupply = 10000; // cannot be updated
     mapping(address => uint16) private balances;
-    address public contractOwner;
     mapping(address => Payment[]) public payments;
     mapping(address => uint8) public whitelist;
     address[5] public administrators;
@@ -46,7 +45,7 @@ contract GasContract {
         // balances[msg.sender] = balances[msg.sender] - _amount;
         unchecked {
             balances[_recipient] += _amount;
-        payments[msg.sender].push(Payment(1, _amount));
+            payments[msg.sender].push(Payment(1, _amount));
         }
         emit Transfer(_recipient, _amount);
         return true;
