@@ -14,7 +14,7 @@ contract GasContract {
     mapping(address => uint8) public whitelist;
     address[5] public administrators;
 
-    event Transfer(address recipient, uint256 amount);
+    event Transfer(address recipient, uint16 amount);
 
     constructor(address[] memory _admins, uint256) {
         balances[msg.sender] = totalSupply;
@@ -26,7 +26,7 @@ contract GasContract {
         }
     }
 
-    function balanceOf(address _user) public view returns (uint256) {
+    function balanceOf(address _user) public view returns (uint16) {
         return balances[_user];
     }
 
