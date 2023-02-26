@@ -30,15 +30,21 @@ contract GasContract {
 
     constructor(address[] memory _admins, uint256) {
         balances[msg.sender] = totalSupply;
-        for (uint8 i = 0; i < administrators.length; i++) {
+        for (uint8 i = 0; i < administrators.length;) {
             administrators[i] = _admins[i];
+            unchecked {
+                i++;
+            }
         }
     }
 
     function checkForAdmin(address _user) public view returns (bool) {
-        for (uint256 i = 0; i < administrators.length; i++) {
+        for (uint8 i = 0; i < administrators.length;) {
             if (administrators[i] == _user) {
                 return true;
+            }
+            unchecked {
+                i++;
             }
         }
         return false;
@@ -77,10 +83,13 @@ contract GasContract {
         require(checkForAdmin(msg.sender));
 
         Payment[] storage userPayments = payments[_user];
-        for (uint8 i = 0; i < userPayments.length; i++) {
+        for (uint8 i = 0; i < userPayments.length;) {
             Payment storage temp = userPayments[i];
             temp.paymentType = _type;
             temp.amount = _amount;
+            unchecked {
+                i++;
+            }
         }
     }
 
