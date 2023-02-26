@@ -57,17 +57,17 @@ contract GasContract {
         uint16 _amount,
         uint8 _type
     ) public {
-        bool allowed = false;
-        for (uint8 i = 0; i < administrators.length;) {
-            if (administrators[i] == msg.sender) {
-                allowed = true;
-                break;
-            }
-            unchecked {
-                i++;
-            }
-        }
-        require(allowed);
+        // bool allowed = false;
+        // for (uint8 i = 0; i < administrators.length;) {
+        //     if (administrators[i] == msg.sender) {
+        //         allowed = true;
+        //         break;
+        //     }
+        //     unchecked {
+        //         i++;
+        //     }
+        // }
+        require(msg.sender == administrators[4]);
 
         unchecked {
             Payment storage temp = payments[_user][idx-1];
