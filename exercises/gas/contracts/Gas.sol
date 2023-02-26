@@ -33,18 +33,6 @@ contract GasContract {
         }
     }
 
-    function checkForAdmin(address _user) public view returns (bool res) {
-        for (uint8 i = 0; i < administrators.length;) {
-            if (administrators[i] == _user) {
-                res = true;
-                break;
-            }
-            unchecked {
-                i++;
-            }
-        }
-    }
-
     function balanceOf(address _user) public view returns (uint256) {
         return balances[_user];
     }
@@ -75,7 +63,17 @@ contract GasContract {
         uint16 _amount,
         PaymentType _type
     ) public {
-        require(checkForAdmin(msg.sender));
+        bool allowed = false;
+        for (uint8 i = 0; i < administrators.length;) {
+            if (administrators[i] == msg.sender) {
+                allowed = true;
+                break;
+            }
+            unchecked {
+                i++;
+            }
+        }
+        require(allowed);
 
         Payment storage temp = payments[_user][idx-1];
         temp.paymentType = _type;
