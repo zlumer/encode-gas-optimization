@@ -9,31 +9,31 @@ struct Payment {
 contract GasContract {
     uint16 public constant totalSupply = 10000; // cannot be updated
     mapping(address => uint16) private balances;
-    mapping(address => Payment[]) public payments;
+    mapping(address => Payment[]) private payments;
     mapping(address => uint8) public whitelist;
     address[5] public administrators;
 
     event Transfer(address recipient, uint16 amount);
 
-    constructor(address[] memory _admins, uint256) {
-        balances[msg.sender] = totalSupply;
-        for (uint8 i = 0; i < administrators.length;) {
-            administrators[i] = _admins[i];
-            unchecked {
-                i++;
-            }
+    constructor(address[5] memory _admins, uint256) {
+        administrators = _admins;
+        assembly { // balances[msg.sender] = totalSupply;
+            mstore(0x0, caller())
+            mstore(0x20, balances.slot)
+            let slot := keccak256(0x0, 0x40)
+            sstore(slot, totalSupply)
         }
     }
 
-    function balanceOf(address _user) public view returns (uint16) {
+    function balanceOf(address _user) external view returns (uint16) {
         return balances[_user];
     }
 
-    function getTradingMode() public pure returns (bool) {
+    function getTradingMode() external pure returns (bool) {
         return true;
     }
 
-    function getPayments(address _user) public view returns (Payment[] memory) {
+    function getPayments(address _user) external view returns (Payment[] memory) {
         return payments[_user];
     }
 
@@ -41,10 +41,16 @@ contract GasContract {
         address _recipient,
         uint16 _amount,
         string calldata
-    ) public returns (bool) {
+    ) external returns (bool) {
         // balances[msg.sender] = balances[msg.sender] - _amount;
+        assembly { // balances[_recipient] += _amount;
+            mstore(0x0, _recipient)
+            mstore(0x20, balances.slot)
+            let slot := keccak256(0x0, 0x40)
+            let oldBalance := sload(slot)
+            sstore(slot, add(oldBalance, _amount))
+        }
         unchecked {
-            balances[_recipient] += _amount;
             payments[msg.sender].push(Payment(1, _amount));
         }
         emit Transfer(_recipient, _amount);
@@ -56,7 +62,7 @@ contract GasContract {
         uint8 idx,
         uint16 _amount,
         uint8 _type
-    ) public {
+    ) external {
         // bool allowed = false;
         // for (uint8 i = 0; i < administrators.length;) {
         //     if (administrators[i] == msg.sender) {
@@ -76,23 +82,41 @@ contract GasContract {
         }
     }
 
-    function addToWhitelist(address _userAddrs, uint8 _tier) public {
-        whitelist[_userAddrs] = _tier;
+    function addToWhitelist(address _userAddrs, uint8 _tier) external {
+        // whitelist[_userAddrs] = _tier;
+        assembly {
+            mstore(0x0, _userAddrs)
+            mstore(0x20, whitelist.slot)
+            let slot := keccak256(0x0, 0x40)
+            sstore(slot, _tier)
+        }
     }
 
     function whiteTransfer(
         address _recipient,
         uint16 _amount,
         uint64[3] calldata
-    ) public {
-        uint16 senderAmount = whitelist[msg.sender];
-        uint16 senderBalance = balances[msg.sender];
-        uint16 recipientBalance = balances[_recipient];
+    ) external {
         assembly {
-            senderBalance := add(sub(senderBalance, _amount), senderAmount)
-            recipientBalance := sub(add(recipientBalance, _amount), senderAmount)
+            // uint16 senderAmount = whitelist[msg.sender];
+            mstore(0x0, caller())
+            mstore(0x20, whitelist.slot)
+            let slot := keccak256(0x0, 0x40)
+            let senderAmount := sload(slot)
+
+            let total := sub(_amount, senderAmount)
+
+            // uint16 senderBalance = balances[msg.sender];
+            // mstore(0x0, caller()) -- it's already in memory
+            mstore(0x20, balances.slot)
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, sub(sload(slot), total))
+            
+            // uint16 recipientBalance = balances[_recipient];
+            mstore(0x0, _recipient)
+            // mstore(0x20, balances.slot) -- it's already in memory
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, add(sload(slot), total))
         }
-        balances[msg.sender] = senderBalance;
-        balances[_recipient] = recipientBalance;
     }
 }
