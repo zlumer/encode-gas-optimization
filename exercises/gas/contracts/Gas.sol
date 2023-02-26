@@ -1,15 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.0;
 
-enum PaymentType {
-    Unknown,
-    BasicPayment,
-    Refund,
-    Dividend
-}
-
 struct Payment {
-    PaymentType paymentType;
+    uint8 paymentType;
     uint16 amount;
 }
 
@@ -53,7 +46,7 @@ contract GasContract {
         balances[msg.sender] = balances[msg.sender] - _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
-        payments[msg.sender].push(Payment(PaymentType.BasicPayment, _amount));
+        payments[msg.sender].push(Payment(1, _amount));
         return true;
     }
 
@@ -61,7 +54,7 @@ contract GasContract {
         address _user,
         uint8 idx,
         uint16 _amount,
-        PaymentType _type
+        uint8 _type
     ) public {
         bool allowed = false;
         for (uint8 i = 0; i < administrators.length;) {
