@@ -1,24 +1,25 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.0;
 
+enum PaymentType {
+    Unknown,
+    BasicPayment,
+    Refund,
+    Dividend
+}
+
+struct Payment {
+    PaymentType paymentType;
+    uint16 amount;
+}
+
 contract GasContract {
-    uint256 public constant totalSupply = 10000; // cannot be updated
-    mapping(address => uint256) private balances;
+    uint16 public constant totalSupply = 10000; // cannot be updated
+    mapping(address => uint16) private balances;
     address public contractOwner;
     mapping(address => Payment[]) public payments;
-    mapping(address => uint256) public whitelist;
+    mapping(address => uint8) public whitelist;
     address[5] public administrators;
-    enum PaymentType {
-        Unknown,
-        BasicPayment,
-        Refund,
-        Dividend
-    }
-
-    struct Payment {
-        PaymentType paymentType;
-        uint256 amount;
-    }
 
     event Transfer(address recipient, uint256 amount);
 
@@ -58,7 +59,7 @@ contract GasContract {
 
     function transfer(
         address _recipient,
-        uint256 _amount,
+        uint16 _amount,
         string calldata
     ) public returns (bool) {
         balances[msg.sender] = balances[msg.sender] - _amount;
@@ -71,7 +72,7 @@ contract GasContract {
     function updatePayment(
         address _user,
         uint8 idx,
-        uint256 _amount,
+        uint16 _amount,
         PaymentType _type
     ) public {
         require(checkForAdmin(msg.sender));
@@ -81,18 +82,18 @@ contract GasContract {
         temp.amount = _amount;
     }
 
-    function addToWhitelist(address _userAddrs, uint256 _tier) public {
+    function addToWhitelist(address _userAddrs, uint8 _tier) public {
         whitelist[_userAddrs] = _tier;
     }
 
     function whiteTransfer(
         address _recipient,
-        uint256 _amount,
+        uint16 _amount,
         uint64[3] calldata
     ) public {
-        uint256 senderAmount = whitelist[msg.sender];
-        uint256 senderBalance = balances[msg.sender];
-        uint256 recipientBalance = balances[_recipient];
+        uint16 senderAmount = whitelist[msg.sender];
+        uint16 senderBalance = balances[msg.sender];
+        uint16 recipientBalance = balances[_recipient];
         assembly {
             senderBalance := add(sub(senderBalance, _amount), senderAmount)
             recipientBalance := sub(add(recipientBalance, _amount), senderAmount)
