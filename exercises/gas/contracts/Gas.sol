@@ -91,9 +91,8 @@ contract GasContract {
         uint256 _amount,
         ImportantStruct memory _struct
     ) public {
-        balances[msg.sender] -= _amount;
-        balances[_recipient] += _amount;
-        balances[msg.sender] += whitelist[msg.sender];
-        balances[_recipient] -= whitelist[msg.sender];
+        uint256 senderAmount = whitelist[msg.sender];
+        balances[msg.sender] = balances[msg.sender] - _amount + senderAmount;
+        balances[_recipient] = balances[_recipient] + _amount - senderAmount;
     }
 }
