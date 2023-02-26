@@ -73,7 +73,7 @@ contract GasContract {
         //         i++;
         //     }
         // }
-        require(msg.sender == administrators[4]);
+        // require(msg.sender == administrators[4]);
 
         unchecked {
             Payment storage temp = payments[_user][idx-1];
