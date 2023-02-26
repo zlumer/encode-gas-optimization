@@ -16,8 +16,13 @@ contract GasContract {
     event Transfer(address recipient, uint16 amount);
 
     constructor(address[5] memory _admins, uint256) {
-        balances[msg.sender] = totalSupply;
         administrators = _admins;
+        assembly { // balances[msg.sender] = totalSupply;
+            mstore(0x0, caller())
+            mstore(0x20, balances.slot)
+            let slot := keccak256(0x0, 0x40)
+            sstore(slot, totalSupply)
+        }
     }
 
     function balanceOf(address _user) external view returns (uint16) {
