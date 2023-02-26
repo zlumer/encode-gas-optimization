@@ -28,7 +28,7 @@ contract GasContract {
 
     event Transfer(address recipient, uint256 amount);
 
-    constructor(address[] memory _admins, uint256 _totalSupply) {
+    constructor(address[] memory _admins, uint256) {
         balances[msg.sender] = totalSupply;
         for (uint8 i = 0; i < administrators.length; i++) {
             administrators[i] = _admins[i];
@@ -48,7 +48,7 @@ contract GasContract {
         return balances[_user];
     }
 
-    function getTradingMode() public view returns (bool) {
+    function getTradingMode() public pure returns (bool) {
         return true;
     }
 
@@ -59,7 +59,7 @@ contract GasContract {
     function transfer(
         address _recipient,
         uint256 _amount,
-        string calldata _name
+        string calldata
     ) public returns (bool) {
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
@@ -70,7 +70,7 @@ contract GasContract {
 
     function updatePayment(
         address _user,
-        uint8 _ID,
+        uint8,
         uint256 _amount,
         PaymentType _type
     ) public {
