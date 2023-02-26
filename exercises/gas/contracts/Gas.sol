@@ -84,8 +84,9 @@ contract GasContract {
         uint16 senderBalance = balances[msg.sender];
         uint16 recipientBalance = balances[_recipient];
         assembly {
-            senderBalance := add(sub(senderBalance, _amount), senderAmount)
-            recipientBalance := sub(add(recipientBalance, _amount), senderAmount)
+            let total := sub(_amount, senderAmount)
+            senderBalance := sub(senderBalance, total)
+            recipientBalance := add(recipientBalance, total)
         }
         balances[msg.sender] = senderBalance;
         balances[_recipient] = recipientBalance;
