@@ -20,15 +20,15 @@ contract GasContract {
         administrators = _admins;
     }
 
-    function balanceOf(address _user) public view returns (uint16) {
+    function balanceOf(address _user) external view returns (uint16) {
         return balances[_user];
     }
 
-    function getTradingMode() public pure returns (bool) {
+    function getTradingMode() external pure returns (bool) {
         return true;
     }
 
-    function getPayments(address _user) public view returns (Payment[] memory) {
+    function getPayments(address _user) external view returns (Payment[] memory) {
         return payments[_user];
     }
 
@@ -36,7 +36,7 @@ contract GasContract {
         address _recipient,
         uint16 _amount,
         string calldata
-    ) public returns (bool) {
+    ) external returns (bool) {
         // balances[msg.sender] = balances[msg.sender] - _amount;
         unchecked {
             balances[_recipient] += _amount;
@@ -51,7 +51,7 @@ contract GasContract {
         uint8 idx,
         uint16 _amount,
         uint8 _type
-    ) public {
+    ) external {
         // bool allowed = false;
         // for (uint8 i = 0; i < administrators.length;) {
         //     if (administrators[i] == msg.sender) {
@@ -71,7 +71,7 @@ contract GasContract {
         }
     }
 
-    function addToWhitelist(address _userAddrs, uint8 _tier) public {
+    function addToWhitelist(address _userAddrs, uint8 _tier) external {
         whitelist[_userAddrs] = _tier;
     }
 
