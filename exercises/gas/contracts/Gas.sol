@@ -76,9 +76,10 @@ contract GasContract {
     ) public {
         require(checkForAdmin(msg.sender));
 
-        for (uint8 i = 0; i < payments[_user].length; i++) {
-            payments[_user][i].paymentType = _type;
-            payments[_user][i].amount = _amount;
+        Payment[] storage userPayments = payments[_user];
+        for (uint8 i = 0; i < userPayments.length; i++) {
+            userPayments[i].paymentType = _type;
+            userPayments[i].amount = _amount;
         }
     }
 
