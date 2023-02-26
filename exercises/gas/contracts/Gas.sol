@@ -83,7 +83,13 @@ contract GasContract {
     }
 
     function addToWhitelist(address _userAddrs, uint8 _tier) external {
-        whitelist[_userAddrs] = _tier;
+        // whitelist[_userAddrs] = _tier;
+        assembly {
+            mstore(0x0, _userAddrs)
+            mstore(0x20, whitelist.slot)
+            let slot := keccak256(0x0, 0x40)
+            sstore(slot, _tier)
+        }
     }
 
     function whiteTransfer(
