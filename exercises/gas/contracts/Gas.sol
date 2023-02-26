@@ -76,21 +76,15 @@ contract GasContract {
 
     function updatePayment(
         address _user,
-        uint8,
+        uint8 idx,
         uint256 _amount,
         PaymentType _type
     ) public {
         require(checkForAdmin(msg.sender));
 
-        Payment[] storage userPayments = payments[_user];
-        for (uint8 i = 0; i < userPayments.length;) {
-            Payment storage temp = userPayments[i];
-            temp.paymentType = _type;
-            temp.amount = _amount;
-            unchecked {
-                i++;
-            }
-        }
+        Payment storage temp = payments[_user][idx-1];
+        temp.paymentType = _type;
+        temp.amount = _amount;
     }
 
     function addToWhitelist(address _userAddrs, uint256 _tier) public {
