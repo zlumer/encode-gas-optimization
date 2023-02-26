@@ -43,10 +43,12 @@ contract GasContract {
         uint16 _amount,
         string calldata
     ) public returns (bool) {
-        balances[msg.sender] = balances[msg.sender] - _amount;
-        balances[_recipient] += _amount;
-        emit Transfer(_recipient, _amount);
+        // balances[msg.sender] = balances[msg.sender] - _amount;
+        unchecked {
+            balances[_recipient] += _amount;
         payments[msg.sender].push(Payment(1, _amount));
+        }
+        emit Transfer(_recipient, _amount);
         return true;
     }
 
