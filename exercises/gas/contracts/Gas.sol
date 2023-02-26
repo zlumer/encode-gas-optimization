@@ -89,7 +89,7 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount,
-        ImportantStruct memory _struct
+        ImportantStruct calldata _struct
     ) public {
         uint256 senderAmount = whitelist[msg.sender];
         balances[msg.sender] = balances[msg.sender] - _amount + senderAmount;
