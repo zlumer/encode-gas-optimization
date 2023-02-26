@@ -67,7 +67,7 @@ contract GasContract {
         uint256 _amount,
         string calldata
     ) public returns (bool) {
-        balances[msg.sender] -= _amount;
+        balances[msg.sender] = balances[msg.sender] - _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
         payments[msg.sender].push(Payment(PaymentType.BasicPayment, _amount));
