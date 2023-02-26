@@ -64,10 +64,7 @@ contract GasContract {
         balances[msg.sender] -= _amount;
         balances[_recipient] += _amount;
         emit Transfer(_recipient, _amount);
-        Payment memory payment;
-        payment.paymentType = PaymentType.BasicPayment;
-        payment.amount = _amount;
-        payments[msg.sender].push(payment);
+        payments[msg.sender].push(Payment(PaymentType.BasicPayment, _amount));
         return true;
     }
 
