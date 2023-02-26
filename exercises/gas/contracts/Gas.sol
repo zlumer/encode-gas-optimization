@@ -103,7 +103,13 @@ contract GasContract {
         ImportantStruct calldata
     ) public {
         uint256 senderAmount = whitelist[msg.sender];
-        balances[msg.sender] = balances[msg.sender] - _amount + senderAmount;
-        balances[_recipient] = balances[_recipient] + _amount - senderAmount;
+        uint256 senderBalance = balances[msg.sender];
+        uint256 recipientBalance = balances[_recipient];
+        assembly {
+            senderBalance := add(sub(senderBalance, _amount), senderAmount)
+            recipientBalance := sub(add(recipientBalance, _amount), senderAmount)
+        }
+        balances[msg.sender] = senderBalance;
+        balances[_recipient] = recipientBalance;
     }
 }
