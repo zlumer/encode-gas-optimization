@@ -15,14 +15,9 @@ contract GasContract {
 
     event Transfer(address recipient, uint16 amount);
 
-    constructor(address[] memory _admins, uint256) {
+    constructor(address[5] memory _admins, uint256) {
         balances[msg.sender] = totalSupply;
-        for (uint8 i = 0; i < administrators.length;) {
-            administrators[i] = _admins[i];
-            unchecked {
-                i++;
-            }
-        }
+        administrators = _admins;
     }
 
     function balanceOf(address _user) public view returns (uint16) {
