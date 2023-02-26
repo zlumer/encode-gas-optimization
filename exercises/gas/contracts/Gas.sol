@@ -20,12 +20,6 @@ contract GasContract {
         uint256 amount;
     }
 
-    struct ImportantStruct {
-        uint8 valueA; // max 3 digits
-        uint256 bigValue;
-        uint8 valueB; // max 3 digits
-    }
-
     event Transfer(address recipient, uint256 amount);
 
     constructor(address[] memory _admins, uint256) {
@@ -94,7 +88,7 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount,
-        ImportantStruct calldata
+        uint64[3] calldata
     ) public {
         uint256 senderAmount = whitelist[msg.sender];
         uint256 senderBalance = balances[msg.sender];
