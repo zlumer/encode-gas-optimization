@@ -91,15 +91,26 @@ contract GasContract {
         uint16 _amount,
         uint64[3] calldata
     ) external {
-        uint16 senderAmount = whitelist[msg.sender];
-        uint16 senderBalance = balances[msg.sender];
-        uint16 recipientBalance = balances[_recipient];
         assembly {
+            // uint16 senderAmount = whitelist[msg.sender];
+            mstore(0x0, caller())
+            mstore(0x20, whitelist.slot)
+            let slot := keccak256(0x0, 0x40)
+            let senderAmount := sload(slot)
+
             let total := sub(_amount, senderAmount)
-            senderBalance := sub(senderBalance, total)
-            recipientBalance := add(recipientBalance, total)
+
+            // uint16 senderBalance = balances[msg.sender];
+            // mstore(0x0, caller()) -- it's already in memory
+            mstore(0x20, balances.slot)
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, sub(sload(slot), total))
+            
+            // uint16 recipientBalance = balances[_recipient];
+            mstore(0x0, _recipient)
+            // mstore(0x20, balances.slot) -- it's already in memory
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, add(sload(slot), total))
         }
-        balances[msg.sender] = senderBalance;
-        balances[_recipient] = recipientBalance;
     }
 }
