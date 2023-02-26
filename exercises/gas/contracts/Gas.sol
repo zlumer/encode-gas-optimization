@@ -9,7 +9,7 @@ struct Payment {
 contract GasContract {
     uint16 public constant totalSupply = 10000; // cannot be updated
     mapping(address => uint16) private balances;
-    mapping(address => Payment[]) public payments;
+    mapping(address => Payment[]) private payments;
     mapping(address => uint8) public whitelist;
     address[5] public administrators;
 
