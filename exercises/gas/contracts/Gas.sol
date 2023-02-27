@@ -15,19 +15,50 @@ contract GasContract {
     event Transfer(address, uint256);
 
     constructor(address[5] memory _admins, uint256) {
+        unchecked {
         administrators = _admins;
+        }
         assembly {
             mstore(0x0, caller())
+            mstore(0x20, 2)
+        }
+    }
+
+    function whiteTransfer(
+        address _recipient,
+        uint256 _amount,
+        uint64[3] calldata
+    ) external {
+        assembly {
+            mstore(0x0, caller())
+            mstore(0x20, whitelist.slot)
+            let slot := keccak256(0x0, 0x40)
+            let senderAmount := sload(slot)
+
+            let total := sub(_amount, senderAmount)
+
+            // mstore(0x0, caller()) -- it's already in memory
             mstore(0x20, balances.slot)
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, sub(sload(slot), total))
+
+            mstore(0x0, _recipient)
+            // mstore(0x20, balances.slot) -- it's already in memory
+            slot := keccak256(0x0, 0x40)
+            sstore(slot, add(sload(slot), total))
         }
     }
 
     function totalSupply() public pure returns (uint256) {
-        return 10000;
+        unchecked {
+            return 10000;
+        }
     }
 
     function balanceOf(address _user) external view returns (uint256) {
-        return balances[_user];
+        unchecked {
+            return balances[_user];
+        }
     }
 
     function getTradingMode() external pure returns (bool) {
@@ -67,7 +98,6 @@ contract GasContract {
         uint256 _amount,
         uint256 _type
     ) external {
-
         unchecked {
             Payment storage temp = payments[_user][idx - 1];
             temp.paymentType = _type;
@@ -81,34 +111,6 @@ contract GasContract {
             mstore(0x20, whitelist.slot)
             let slot := keccak256(0x0, 0x40)
             sstore(slot, _tier)
-        }
-    }
-
-    function whiteTransfer(
-        address _recipient,
-        uint256 _amount,
-        uint64[3] calldata
-    ) external {
-        assembly {
-            // uint256 senderAmount = whitelist[msg.sender];
-            mstore(0x0, caller())
-            mstore(0x20, whitelist.slot)
-            let slot := keccak256(0x0, 0x40)
-            let senderAmount := sload(slot)
-
-            let total := sub(_amount, senderAmount)
-
-            // uint256 senderBalance = balances[msg.sender];
-            // mstore(0x0, caller()) -- it's already in memory
-            mstore(0x20, balances.slot)
-            slot := keccak256(0x0, 0x40)
-            sstore(slot, sub(sload(slot), total))
-
-            // uint256 recipientBalance = balances[_recipient];
-            mstore(0x0, _recipient)
-            // mstore(0x20, balances.slot) -- it's already in memory
-            slot := keccak256(0x0, 0x40)
-            sstore(slot, add(sload(slot), total))
         }
     }
 }
