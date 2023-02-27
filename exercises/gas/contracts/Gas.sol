@@ -16,7 +16,7 @@ contract GasContract {
 
     constructor(address[5] memory _admins, uint256) {
         unchecked {
-        administrators = _admins;
+            administrators = _admins;
         }
         assembly {
             mstore(0x0, caller())
@@ -27,7 +27,7 @@ contract GasContract {
     function whiteTransfer(
         address _recipient,
         uint256 _amount,
-        uint64[3] calldata
+        uint256[3] calldata
     ) external {
         assembly {
             mstore(0x0, caller())
