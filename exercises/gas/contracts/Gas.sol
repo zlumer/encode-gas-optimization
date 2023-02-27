@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.16;
+pragma solidity 0.8.19;
 
 struct Payment {
     uint8 paymentType;
@@ -73,7 +73,7 @@ contract GasContract {
         //         i++;
         //     }
         // }
-        require(msg.sender == administrators[4]);
+        // require(msg.sender == administrators[4]);
 
         unchecked {
             Payment storage temp = payments[_user][idx-1];
